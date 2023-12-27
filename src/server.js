@@ -1,32 +1,40 @@
+/* eslint-disable no-console */
 import express from 'express'
-import { mapOrder } from '~/utils/sorts.js'
+import { CLOSE_DB, CONNECT_DB, get_db } from './config/mongodb'
+import exitHook from 'async-exit-hook'
+import { env } from './config/environment'
 
-const app = express()
+const startServer = () => {
+  const app = express()
 
-const hostname = 'localhost'
-const port = 8017
-
-app.get('/', (req, res) => {
-  // Test Absolute import mapOrder
-  // eslint-disable-next-line no-console
-  console.log(
-    mapOrder(
-      [
-        { id: 'id-1', name: 'One' },
-        { id: 'id-2', name: 'Two' },
-        { id: 'id-3', name: 'Three' },
-        { id: 'id-4', name: 'Four' },
-        { id: 'id-5', name: 'Five' }
-      ],
-      ['id-5', 'id-4', 'id-2', 'id-3', 'id-1'],
-      'id'
+  app.get('/', async (req, res) => {
+    res.end('<h1>Hello World!</h1><hr>')
+  })
+  app.listen(env.APP_PORT, env.APP_HOST, () => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `Hello Thanh Nhax, I am running at http://${env.APP_HOST}:${
+        env.APP_PORT ? env.APP_PORT : 3000
+      }`
     )
-  )
-  res.end('<h1>Hello World!</h1><hr>')
-})
+  })
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Hello Thanh Nhax, I am running at ${hostname}:${port}/`)
-})
+  // Thực hiện các công vic như close DB khi kill port
+  exitHook(() => {
+    console.log('Disconnected from MongoDB Cloud Atlas!')
+    CLOSE_DB()
+  })
+}
 
+// Ket noi DB
+;(async () => {
+  try {
+    await CONNECT_DB()
+    console.log('Connected to MongoDB Cloud Atlas!')
+
+    startServer()
+  } catch (e) {
+    console.log(e)
+    process.exit(0)
+  }
+})()
