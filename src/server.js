@@ -1,15 +1,18 @@
 /* eslint-disable no-console */
 import express from 'express'
-import { CLOSE_DB, CONNECT_DB, get_db } from './config/mongodb'
+import { CLOSE_DB, CONNECT_DB } from './config/mongodb'
 import exitHook from 'async-exit-hook'
 import { env } from './config/environment'
+import { APIs_V1 } from '~/routes/v1'
 
 const startServer = () => {
   const app = express()
+  // Nhận dữ liệu từ req.body
+  app.use(express.json())
 
-  app.get('/', async (req, res) => {
-    res.end('<h1>Hello World!</h1><hr>')
-  })
+  // API v1
+  app.use('/v1', APIs_V1)
+
   app.listen(env.APP_PORT, env.APP_HOST, () => {
     // eslint-disable-next-line no-console
     console.log(
