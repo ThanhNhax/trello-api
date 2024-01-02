@@ -1,13 +1,10 @@
-import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
+import { boardService } from '~/services/boardService'
 
-const createNew = (req, res, next) => {
+const createNew = async (req, res, next) => {
   try {
-    //Nhận dữ liệu ở FE qua req.body
-    console.log(req.body)
-    // abortEarly: false :: trả về tất cả error khi dữ liệu có nhiều lỗi
-
-    res.status(StatusCodes.CREATED).json({ message: 'POST from Controller' })
+    const createBoard = await boardService.createNew(req.body)
+    res.status(StatusCodes.CREATED).json(createBoard)
   } catch (err) {
     next(err)
   }
