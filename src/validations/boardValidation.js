@@ -11,8 +11,8 @@ const createNew = async (req, res, next) => {
     console.log(req.body)
     // abortEarly: false :: trả về tất cả error khi dữ liệu có nhiều lỗi
     await correctCondition.validateAsync(req.body, { abortEarly: false })
-
-    res.status(StatusCodes.CREATED).json({ message: 'POST from Validation' })
+    // validation xong roi thi chyen sang controller
+    next()
   } catch (err) {
     console.log(err)
     // StatusCodes.UNPROCESSABLE_ENTITY: mã 422('lỗi về kiểm tra dữ liệu FE gửi lên')
