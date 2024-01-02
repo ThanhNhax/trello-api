@@ -9,9 +9,7 @@ const createNew = (req, res, next) => {
 
     res.status(StatusCodes.CREATED).json({ message: 'POST from Controller' })
   } catch (err) {
-    console.log(err)
-    // StatusCodes.UNPROCESSABLE_ENTITY: mã 422('lỗi về kiểm tra dữ liệu FE gửi lên')
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ errors: err.message })
+    next(err)
   }
 }
 

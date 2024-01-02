@@ -1,5 +1,6 @@
 import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
+import CustomerError from '~/utils/CustomerError'
 
 const createNew = async (req, res, next) => {
   const correctCondition = Joi.object({
@@ -7,18 +8,17 @@ const createNew = async (req, res, next) => {
     description: Joi.string().required().min(3).max(256).trim().strict()
   })
   try {
-    //Nhận dữ liệu ở FE qua req.body
-    console.log(req.body)
     // abortEarly: false :: trả về tất cả error khi dữ liệu có nhiều lỗi
     await correctCondition.validateAsync(req.body, { abortEarly: false })
     // validation xong roi thi chyen sang controller
     next()
   } catch (err) {
-    console.log(err)
-    // StatusCodes.UNPROCESSABLE_ENTITY: mã 422('lỗi về kiểm tra dữ liệu FE gửi lên')
-    res
-      .status(StatusCodes.UNPROCESSABLE_ENTITY)
-      .json({ errors: new Error(err).message })
+    next(
+      new CustomerError(
+        StatusCodes.UNPROCESSABLE_ENTITY,
+        new Error(err.message)
+      )
+    )
   }
 }
 
